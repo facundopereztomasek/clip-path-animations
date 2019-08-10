@@ -2,7 +2,6 @@
   <v-app dark>
 
     <v-app-bar
-      :clipped-left="clipped"
       fixed
       app
     >
@@ -28,7 +27,6 @@
     >
     </v-navigation-drawer>
     <v-footer
-      :fixed="fixed"
       app
     >
       <span>
