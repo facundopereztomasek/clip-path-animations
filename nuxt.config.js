@@ -81,6 +81,9 @@ export default {
       }
     }
   },
+  router: {
+    base: process.env.NODE_ENV === 'production' ? '/clip-path-animations/' : '/',
+  },
   /*
    ** Build configuration
    */
@@ -88,7 +91,7 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+    publicPath: '/',
     extend(config, ctx) {}
   }
 }
