@@ -35,14 +35,14 @@
  * @license  MIT
  */
 
-/*!
- * vue-no-ssr v1.1.1
- * (c) 2018-present egoist <0x142857@gmail.com>
- * Released under the MIT License.
- */
-
 /**
  * @copyright 2017 Alex Regan
  * @license MIT
  * @see https://github.com/alexsasharegan/vue-functional-data-merge
+ */
+
+/*!
+ * vue-no-ssr v1.1.1
+ * (c) 2018-present egoist <0x142857@gmail.com>
+ * Released under the MIT License.
  */
