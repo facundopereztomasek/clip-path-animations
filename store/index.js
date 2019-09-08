@@ -1,5 +1,10 @@
+const uuidv1 = require('uuid/v1')
+
 export const state = () => ({
   counter: 0,
+  newDialog: false,
+  editDialog: false,
+  editDialogShapeId: null,
   shapes: [
 
   ],
@@ -13,7 +18,36 @@ export const mutations = {
 
   addShape(state, { shape }) {
     const completedShape = completeShape(shape)
+    completedShape.uuid = uuidv1()
     state.shapes = [...state.shapes, completedShape]
+  },
+
+  newShape(state) {
+    state.newDialog = true
+  },
+
+  editShape(state, { shapeName }) {
+    state.editDialogShapeId = shapeName
+    state.editDialog = true
+  },
+
+  updateShape(state, { shape }) {
+    const completedShape = completeShape(shape)
+    const updatedShapeIndex = state.shapes.findIndex( _ => _.uuid === shape.uuid)
+    state.shapes = [
+      ...state.shapes.slice(0, updatedShapeIndex),
+      completedShape,
+      ...state.shapes.slice(updatedShapeIndex + 1),
+    ]
+  },
+
+  closeEditDialog(state) {
+    state.editDialogShapeId = null
+    state.editDialog = false
+  },
+
+  closeNewDialog(state) {
+    state.newDialog = false
   }
 }
 
@@ -31,11 +65,11 @@ const completeShape = (shape) => {
 }
 
 const flattenPoints = (points) => {
-  return points.map( _ => _.join(' ')).join(', ')
+  return points.map( _ => _.join('px ')+'px').join(', ')
 }
 
 const mapValue = (value, maxValue) => {
-  return Math.floor(value / maxValue * 10000) / 100
+  return Math.round((value / maxValue) * 10000) / 100
 }
 
 const getTotalLength = (path) => {
@@ -50,6 +84,10 @@ const getPointAtPercentage = (percentage, path) => {
 
 const getMaxPoint = (points) => {
   return points.reduce((acc, actual) => Math.max(acc, Math.max(actual[0], actual[1])), 0)
+}
+
+const getMinPoint = (points) => {
+  return points.reduce((acc, actual) => Math.min(acc, Math.min(actual[0], actual[1])), 0)
 }
 
 const getMinXPoint = (points) => {
@@ -68,12 +106,16 @@ const getMaxYPoint = (points) => {
   return points.reduce((acc, actual) => Math.max(acc, actual[1]), -Infinity)
 }
 
+const getMinOfMaxPoint = (points) => {
+  return getMaxPoint(points) == getMaxXPoint(points) ? getMinXPoint(points) : getMinYPoint(points)
+}
+
 const getPointsFromPath = (stringPath) => {
   const path = document.createElementNS('http://www.w3.org/2000/svg','path')
-        path.setAttribute('d', stringPath)
+  path.setAttribute('d', stringPath)
 
   const tmpPoints = []
-  const steps = 100
+  const steps = 300
   const shift = 0
   const reverse = false
 
@@ -92,11 +134,15 @@ const getPointsFromPath = (stringPath) => {
     tmpPoints.push([px, py])
   }
 
-  const maxPoint = getMaxPoint(tmpPoints)
   const minXPoint = getMinXPoint(tmpPoints)
   const minYPoint = getMinYPoint(tmpPoints)
   const maxXPoint = getMaxXPoint(tmpPoints)
   const maxYPoint = getMaxYPoint(tmpPoints)
-  const points = tmpPoints.map(_ => [mapValue(_[0] - minXPoint, maxPoint), mapValue(_[1] - minYPoint, maxPoint)])
-  return { maxPoint, minXPoint, minYPoint, maxXPoint, maxYPoint, points }
+
+  const noPaddingPoints = tmpPoints.map(_ => [_[0] - minXPoint, _[1] - minYPoint])
+
+  const maxPoint = getMaxPoint(noPaddingPoints)
+  // const points = noPaddingPoints.map(_ => [mapValue(_[0], maxPoint), mapValue(_[1], maxPoint)])
+  const points = noPaddingPoints
+  return { minXPoint, minYPoint, maxXPoint, maxYPoint, points }
 }
