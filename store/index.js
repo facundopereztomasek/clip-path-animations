@@ -26,8 +26,8 @@ export const mutations = {
     state.newDialog = true
   },
 
-  editShape(state, { shapeName }) {
-    state.editDialogShapeId = shapeName
+  editShape(state, { shapeUUID }) {
+    state.editDialogShapeId = shapeUUID
     state.editDialog = true
   },
 
@@ -38,6 +38,14 @@ export const mutations = {
       ...state.shapes.slice(0, updatedShapeIndex),
       completedShape,
       ...state.shapes.slice(updatedShapeIndex + 1),
+    ]
+  },
+
+  deleteShape(state, { shapeUUID }) {
+    const deletedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    state.shapes = [
+      ...state.shapes.slice(0, deletedShapeIndex),
+      ...state.shapes.slice(deletedShapeIndex + 1),
     ]
   },
 
