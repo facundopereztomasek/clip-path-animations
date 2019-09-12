@@ -26,7 +26,10 @@
       </v-list-item-content>
 
       <v-list-item-icon>
-        <v-btn icon small color="blue">
+        <v-btn icon small color="grey" @click="showShape(shape.uuid)" v-show="!shape.visible">
+          <v-icon>{{ icons.mdiEyeOff }}</v-icon>
+        </v-btn>
+        <v-btn icon small color="blue" @click="hideShape(shape.uuid)" v-show="shape.visible">
           <v-icon>{{ icons.mdiEye }}</v-icon>
         </v-btn>
         <v-btn icon small color="blue" @click="editShape(shape.uuid)">
@@ -63,6 +66,12 @@ export default {
     },
     deleteShape(shapeUUID) {
       this.$store.commit('deleteShape', { shapeUUID })
+    },
+    showShape(shapeUUID) {
+      this.$store.commit('showShape', { shapeUUID })
+    },
+    hideShape(shapeUUID) {
+      this.$store.commit('hideShape', { shapeUUID })
     },
   },
   computed: {

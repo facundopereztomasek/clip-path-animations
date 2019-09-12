@@ -19,6 +19,7 @@ export const mutations = {
   addShape(state, { shape }) {
     const completedShape = completeShape(shape)
     completedShape.uuid = uuidv1()
+    completedShape.visible = true
     state.shapes = [...state.shapes, completedShape]
   },
 
@@ -47,6 +48,16 @@ export const mutations = {
       ...state.shapes.slice(0, deletedShapeIndex),
       ...state.shapes.slice(deletedShapeIndex + 1),
     ]
+  },
+
+  showShape(state, { shapeUUID }) {
+    const showedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    state.shapes[showedShapeIndex].visible = true
+  },
+
+  hideShape(state, { shapeUUID }) {
+    const showedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    state.shapes[showedShapeIndex].visible = false
   },
 
   closeEditDialog(state) {

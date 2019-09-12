@@ -14,8 +14,9 @@ export default {
       return this.deviceWidth >= this.deviceHeight ? 500 / this.deviceWidth  : 500 / this.deviceHeight
     },
     clipPaths() {
-
-      return this.$store.state.shapes.map( _ => this.scalePoints(_.points, this.pixelScale) )
+      return this.$store.state.shapes
+        .filter( _ => _.visible)
+        .map( _ => this.scalePoints(_.points, this.pixelScale) )
     },
     height() {
       return this.deviceWidth >= this.deviceHeight ? this.maxWidth * (this.deviceHeight / this.deviceWidth) : this.maxHeight
