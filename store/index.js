@@ -60,6 +60,17 @@ export const mutations = {
     state.shapes[showedShapeIndex].visible = false
   },
 
+  duplicateShape(state, { shapeUUID }) {
+    const showedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    const duplicatedShape = { ...state.shapes[showedShapeIndex] }
+    const completedShape = completeShape({ ...duplicatedShape, name: `${duplicatedShape.name}-d` })
+    completedShape.uuid = uuidv1()
+    completedShape.visible = true
+    state.shapes = [...state.shapes, completedShape]
+  },
+
+
+
   closeEditDialog(state) {
     state.editDialogShapeId = null
     state.editDialog = false

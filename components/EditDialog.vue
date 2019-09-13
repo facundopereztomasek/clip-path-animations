@@ -58,7 +58,7 @@ export default {
   props: ['shape'],
   methods: {
     closeDialog() {
-      this.$store.commit('closeDialog')
+      this.$store.commit('closeEditDialog')
     },
     updateShape() {
       const shape = this.updatedShape

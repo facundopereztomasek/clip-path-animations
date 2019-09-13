@@ -14,39 +14,51 @@
       <span>No shapes: <a href="#" @click="newShape">add a new shape</a></span>
     </v-list-item>
 
-    <v-list-item v-for="shape in shapes" :key="shape.uuid">
-      <v-list-item-avatar>
-        <svg class="" width="100%" height="100%" v-bind:viewBox="`${shape.viewport.x1} ${shape.viewport.y1} ${shape.viewport.x2} ${shape.viewport.y2}`">
-          <path v-bind:d="shape.path"></path>
-        </svg>
-      </v-list-item-avatar>
+    <v-list-group v-for="shape in shapes" :key="shape.uuid" sub-group>
+        <template v-slot:activator>
+          <v-list-item-avatar size="20" class="mr-3">
+            <svg class="" width="100%" height="100%" v-bind:viewBox="`${shape.viewport.x1} ${shape.viewport.y1} ${shape.viewport.x2} ${shape.viewport.y2}`">
+              <path v-bind:d="shape.path"></path>
+            </svg>
+          </v-list-item-avatar>
 
-      <v-list-item-content>
-        <v-list-item-title v-text="shape.name"></v-list-item-title>
-      </v-list-item-content>
+          <v-list-item-content>
+            <v-list-item-title v-text="shape.name"></v-list-item-title>
+          </v-list-item-content>
 
-      <v-list-item-icon>
-        <v-btn icon small color="grey" @click="showShape(shape.uuid)" v-show="!shape.visible">
-          <v-icon>{{ icons.mdiEyeOff }}</v-icon>
-        </v-btn>
-        <v-btn icon small color="blue" @click="hideShape(shape.uuid)" v-show="shape.visible">
-          <v-icon>{{ icons.mdiEye }}</v-icon>
-        </v-btn>
-        <v-btn icon small color="blue" @click="editShape(shape.uuid)">
-          <v-icon>{{ icons.mdiPencil }}</v-icon>
-        </v-btn>
-        <v-btn icon small color="blue" @click="deleteShape(shape.uuid)">
-          <v-icon>{{ icons.mdiDelete }}</v-icon>
-        </v-btn>
-      </v-list-item-icon>
-    </v-list-item>
+          <v-list-item-icon>
+            <v-btn icon x-small color="grey" @click.stop="showShape(shape.uuid)" v-show="!shape.visible">
+              <v-icon>{{ icons.mdiEyeOff }}</v-icon>
+            </v-btn>
+            <v-btn icon x-small color="blue" @click.stop="hideShape(shape.uuid)" v-show="shape.visible">
+              <v-icon>{{ icons.mdiEye }}</v-icon>
+            </v-btn>
+
+          </v-list-item-icon>
+        </template>
+
+      <v-list-item>
+        <div class="toolbar">
+          <v-btn icon x-small color="blue" @click.stop="editShape(shape.uuid)">
+            <v-icon>{{ icons.mdiPencil }}</v-icon>
+          </v-btn>
+          <v-btn icon x-small color="blue" @click.stop="deleteShape(shape.uuid)">
+            <v-icon>{{ icons.mdiDelete }}</v-icon>
+          </v-btn>
+          <v-btn icon x-small color="blue" @click.stop="duplicateShape(shape.uuid)">
+            <v-icon>{{ icons.mdiContentDuplicate }}</v-icon>
+          </v-btn>
+        </div>
+      </v-list-item>
+
+    </v-list-group>
   </v-list>
 </v-card>
 </template>
 
 <script>
 
-import { mdiAccount, mdiPencil, mdiEye, mdiEyeOff, mdiShareVariant, mdiDelete } from '@mdi/js'
+import { mdiAccount, mdiPencil, mdiEye, mdiEyeOff, mdiShareVariant, mdiDelete, mdiContentDuplicate } from '@mdi/js'
 
 export default {
   created() {
@@ -73,6 +85,9 @@ export default {
     hideShape(shapeUUID) {
       this.$store.commit('hideShape', { shapeUUID })
     },
+    duplicateShape(shapeUUID) {
+      this.$store.commit('duplicateShape', { shapeUUID })
+    }
   },
   computed: {
     shapes() {
@@ -81,11 +96,24 @@ export default {
   },
   data() {
     return {
-      icons: { mdiAccount, mdiPencil, mdiEye, mdiEyeOff, mdiShareVariant, mdiDelete },
+      icons: { mdiAccount, mdiPencil, mdiEye, mdiEyeOff, mdiShareVariant, mdiDelete, mdiContentDuplicate },
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  ::v-deep .v-list-group__header.v-list-item {
+    padding-left: 16px;
+  }
+  ::v-deep .v-list-group--sub-group .v-list-group__items .v-list-item {
+    padding-left: 16px;
+  }
+
+  .toolbar {
+    background-color: whitesmoke;
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+  }
 </style>
