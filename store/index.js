@@ -17,9 +17,12 @@ export const mutations = {
   },
 
   addShape(state, { shape }) {
-    const completedShape = completeShape(shape)
-    completedShape.uuid = uuidv1()
-    completedShape.visible = true
+    const completedShape = completeShape({...shape,
+      uuid: uuidv1(),
+      scale: 1,
+      steps: 50,
+      visible: true
+    })
     state.shapes = [...state.shapes, completedShape]
   },
 
@@ -69,6 +72,28 @@ export const mutations = {
     state.shapes = [...state.shapes, completedShape]
   },
 
+  /** The updateAttribute should be a general mutation */
+  updateScale(state, { value, shapeUUID }) {
+    const updatedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    const completedShape = completeShape({ ...state.shapes[updatedShapeIndex], scale: value})
+
+    /** Im repeating myself all the time with this thing */
+    state.shapes = [
+      ...state.shapes.slice(0, updatedShapeIndex),
+      completedShape,
+      ...state.shapes.slice(updatedShapeIndex + 1),
+    ]
+  },
+
+  updateSteps(state, { value, shapeUUID }) {
+    const updatedShapeIndex = state.shapes.findIndex(_ => _.uuid === shapeUUID)
+    const completedShape = completeShape({ ...state.shapes[updatedShapeIndex], steps: value })
+    state.shapes = [
+      ...state.shapes.slice(0, updatedShapeIndex),
+      completedShape,
+      ...state.shapes.slice(updatedShapeIndex + 1),
+    ]
+  },
 
 
   closeEditDialog(state) {
@@ -82,7 +107,7 @@ export const mutations = {
 }
 
 const completeShape = (shape) => {
-  const {points, minXPoint, minYPoint, maxXPoint, maxYPoint} = getPointsFromPath(shape.path)
+  const {points, minXPoint, minYPoint, maxXPoint, maxYPoint} = getPointsFromPath(shape)
   const pointsText = flattenPoints(points)
   const viewport = { x1: minXPoint, y1: minYPoint, x2: maxXPoint - minXPoint, y2: maxYPoint - minYPoint}
   const analizedShape = {
@@ -140,12 +165,11 @@ const getMinOfMaxPoint = (points) => {
   return getMaxPoint(points) == getMaxXPoint(points) ? getMinXPoint(points) : getMinYPoint(points)
 }
 
-const getPointsFromPath = (stringPath) => {
-  const path = document.createElementNS('http://www.w3.org/2000/svg','path')
-  path.setAttribute('d', stringPath)
+const getPointsFromPath = ({steps, path, scale}) => {
+  const newPath = document.createElementNS('http://www.w3.org/2000/svg','path')
+  newPath.setAttribute('d', path)
 
   const tmpPoints = []
-  const steps = 300
   const shift = 0
   const reverse = false
 
@@ -156,10 +180,10 @@ const getPointsFromPath = (stringPath) => {
       percentage = percentage - (percentage > 100 ? 100 : 0)
     }
 
-    const svgPoints = getPointAtPercentage(reverse ? 100 - percentage : percentage, path)
+    const svgPoints = getPointAtPercentage(reverse ? 100 - percentage : percentage, newPath)
 
-    const px = Math.round(svgPoints.x * 100) / 100
-    const py = Math.round(svgPoints.y * 100) / 100
+    const px = Math.round(svgPoints.x * 100) / 100 * scale
+    const py = Math.round(svgPoints.y * 100) / 100 * scale
 
     tmpPoints.push([px, py])
   }
