@@ -107,9 +107,9 @@ export const mutations = {
 }
 
 const completeShape = (shape) => {
-  const {points, minXPoint, minYPoint, maxXPoint, maxYPoint} = getPointsFromPath(shape)
+  const { viewport, points } = getPointsFromPath(shape)
   const pointsText = flattenPoints(points)
-  const viewport = { x1: minXPoint, y1: minYPoint, x2: maxXPoint - minXPoint, y2: maxYPoint - minYPoint}
+
   const analizedShape = {
     ...shape,
     points,
@@ -170,6 +170,7 @@ const getPointsFromPath = ({steps, path, scale}) => {
   newPath.setAttribute('d', path)
 
   const tmpPoints = []
+  const viewportPoints = []
   const shift = 0
   const reverse = false
 
@@ -182,10 +183,20 @@ const getPointsFromPath = ({steps, path, scale}) => {
 
     const svgPoints = getPointAtPercentage(reverse ? 100 - percentage : percentage, newPath)
 
-    const px = Math.round(svgPoints.x * 100) / 100 * scale
-    const py = Math.round(svgPoints.y * 100) / 100 * scale
+    let [ px, py ] = [
+      Math.round(svgPoints.x * 100) / 100 ,
+      Math.round(svgPoints.y * 100) / 100
+    ]
 
-    tmpPoints.push([px, py])
+    viewportPoints.push([px, py])
+    tmpPoints.push([px, py].map( _ => _ * scale ))
+  }
+
+  const viewport = {
+    x1: getMinXPoint(viewportPoints),
+    y1: getMinYPoint(viewportPoints),
+    x2: getMaxXPoint(viewportPoints) - getMinXPoint(viewportPoints),
+    y2: getMaxYPoint(viewportPoints) - getMinYPoint(viewportPoints)
   }
 
   const minXPoint = getMinXPoint(tmpPoints)
@@ -198,5 +209,5 @@ const getPointsFromPath = ({steps, path, scale}) => {
   const maxPoint = getMaxPoint(noPaddingPoints)
   // const points = noPaddingPoints.map(_ => [mapValue(_[0], maxPoint), mapValue(_[1], maxPoint)])
   const points = noPaddingPoints
-  return { minXPoint, minYPoint, maxXPoint, maxYPoint, points }
+  return { viewport, minXPoint, minYPoint, maxXPoint, maxYPoint, points }
 }

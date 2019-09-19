@@ -17,7 +17,7 @@
     <v-list-group v-for="shape in shapes" :key="shape.uuid" sub-group>
       <template v-slot:activator>
         <v-list-item-avatar size="20" class="mr-3">
-          <svg class="" width="100%" height="100%" v-bind:viewBox="`${shape.viewport.x1} ${shape.viewport.y1} ${shape.viewport.x2} ${shape.viewport.y2}`">
+          <svg width="100%" height="100%" v-bind:viewBox="`${shape.viewport.x1} ${shape.viewport.y1} ${shape.viewport.x2} ${shape.viewport.y2}`">
             <path v-bind:d="shape.path"></path>
           </svg>
         </v-list-item-avatar>
